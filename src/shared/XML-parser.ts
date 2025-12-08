@@ -15,20 +15,42 @@ export function stripPrefixes<T>(obj: T): T {
   return obj;
 }
 
-export function parseXML(file: File): Promise<unknown> {
+export function parseXML(file: File | Buffer | string): Promise<unknown> {
   return new Promise((resolve, reject): void => {
-    const reader = new FileReader();
+    try {
+      let xmlStr: string;
 
-    reader.onload = function (e: ProgressEvent<FileReader>): void {
-      try {
-        const xmlStr: string = e.target?.result as string;
+      // Jeśli to już string, użyj bezpośrednio
+      if (typeof file === 'string') {
+        xmlStr = file;
         const jsonDoc: Faktura = stripPrefixes(xml2js(xmlStr, { compact: true })) as Faktura;
-
         resolve(jsonDoc);
-      } catch (error) {
-        reject(error);
+        return;
       }
-    };
-    reader.readAsText(file);
+
+      // Jeśli to Buffer (Node.js), konwertuj na string
+      if (Buffer.isBuffer(file)) {
+        xmlStr = file.toString('utf-8');
+        const jsonDoc: Faktura = stripPrefixes(xml2js(xmlStr, { compact: true })) as Faktura;
+        resolve(jsonDoc);
+        return;
+      }
+
+      // Jeśli to File (przeglądarka), użyj FileReader
+      const reader = new FileReader();
+
+      reader.onload = function (e: ProgressEvent<FileReader>): void {
+        try {
+          xmlStr = e.target?.result as string;
+          const jsonDoc: Faktura = stripPrefixes(xml2js(xmlStr, { compact: true })) as Faktura;
+          resolve(jsonDoc);
+        } catch (error) {
+          reject(error);
+        }
+      };
+      reader.readAsText(file);
+    } catch (error) {
+      reject(error);
+    }
   });
 }

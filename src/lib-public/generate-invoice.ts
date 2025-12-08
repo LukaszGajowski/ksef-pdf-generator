@@ -9,17 +9,17 @@ import { TCreatedPdf } from 'pdfmake/build/pdfmake';
 import { AdditionalDataTypes } from './types/common.types';
 
 export async function generateInvoice(
-  file: File,
+  file: File | Buffer | string,
   additionalData: AdditionalDataTypes,
   formatType: 'blob'
 ): Promise<Blob>;
 export async function generateInvoice(
-  file: File,
+  file: File | Buffer | string,
   additionalData: AdditionalDataTypes,
   formatType: 'base64'
 ): Promise<string>;
 export async function generateInvoice(
-  file: File,
+  file: File | Buffer | string,
   additionalData: AdditionalDataTypes,
   formatType: FormatType = 'blob'
 ): Promise<FormatTypeResult> {
