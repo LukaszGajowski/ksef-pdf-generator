@@ -7,7 +7,7 @@ import { Position } from '../shared/enums/common.enum';
 import { generateDokumentUPO } from './generators/UPO4_3/Dokumenty';
 import { generateNaglowekUPO } from './generators/UPO4_3/Naglowek';
 
-export async function generatePDFUPO(file: File): Promise<Blob> {
+export async function generatePDFUPO(file: File | Buffer | string): Promise<Blob> {
   const upo = (await parseXML(file)) as Upo;
   const docDefinition: TDocumentDefinitions = {
     content: [generateNaglowekUPO(upo.Potwierdzenie!), generateDokumentUPO(upo.Potwierdzenie!)],
